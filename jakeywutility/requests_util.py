@@ -2,7 +2,7 @@
 
 import random
 
-from utility.config.requests_conf import USER_AGENTS
+from jakeywutility.config.requests_conf import USER_AGENTS
 
 
 def get_user_agent():

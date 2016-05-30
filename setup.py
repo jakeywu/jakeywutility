@@ -7,10 +7,10 @@ requirements = [
 ]
 
 setup(
-    name="utility",
+    name="jakeywutility",
     version="1.0",
     description="python public utilities",
-    packages=["utility", "utility/config"],
+    packages=["jakeywutility", "jakeywutility/config"],
     author="jakey",
     author_email="jakeywu520@gmail.com",
     url="",

@@ -4,7 +4,7 @@
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from utility.config.email_conf import SERVER, USER_NAME, PASS_WORD, SERVICE_EMAIL
+from jakeywutility.config.email_conf import SERVER, USER_NAME, PASS_WORD, SERVICE_EMAIL
 
 
 def send_email(content, tos, subject="系统邮件", subtype="plain"):
@@ -67,4 +67,4 @@ def send_attach(content, tos, file_path, subject="系统邮件", subtype="plain"
 
 if __name__ == "__main__":
     send_email(content="<p>Python 邮件发送测试...</p>", tos=["1226231147@qq.com"], subtype="html")
-    send_attach(content="<p>Python 邮件发送测试...</p>", tos=["1226231147@qq.com"], subtype="html", file_path="/home/jakey/pythonProjects/utility/utility/logger.py")
+    send_attach(content="<p>Python 邮件发送测试...</p>", tos=["1226231147@qq.com"], subtype="html", file_path="/home/jakey/pythonProjects/jakeywutility/jakeywutility/logger.py")

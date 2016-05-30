@@ -4,7 +4,7 @@ import logging
 import logging.config
 import os
 
-from utility.config.logging_conf import logging_conf_dict
+from jakeywutility.config.logging_conf import logging_conf_dict
 
 
 def get_logger(path="", name="root"):
