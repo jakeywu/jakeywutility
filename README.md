@@ -44,7 +44,7 @@ for i in range(5):
     # 按照不完全匹配发送接收消息
     connection.producer_topics(message=message1, routing_key="sys.info", exchange="topics_test")
     
-# 生产者, 没有RPC远程方法调用, 因为我觉得RPC没太大的舞台了．
+# 消费者, 没有RPC远程方法调用, 因为我觉得RPC没太大的舞台了．
 asy_consumer = AsyConsumer(host="192.168.31.114", user_name="sc-admin", password="1qaz2wsx")
     def callback(ch, method, properties, body):
         print(body)
