@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 # __author__ = 'jakey'
 
 import pika
@@ -43,6 +44,11 @@ class AsyConsumer:
         self.virtual_host = virtual_host
         self.ssl = ssl
         self.__connection = self.__connection_rabbit()
+        self.__channel_single = self.__connection.channel()
+        self.__channel_work_queue = self.__connection.channel()
+        self.__channel_subscribe = self.__connection.channel()
+        self.__channel_routing = self.__connection.channel()
+        self.__channel_topics = self.__connection.channel()
 
     def __connection_rabbit(self):
         parameters = pika.ConnectionParameters(
@@ -68,11 +74,9 @@ class AsyConsumer:
         if not queue_name or not isinstance(queue_name, str) or not isinstance(no_ack, bool):
             raise TypeError("参数有误, 请重新输入")
 
-        connection = self.__connection
-        channel = connection.channel()
-        channel.queue_declare(queue=queue_name, durable=True)
-        channel.basic_consume(function, queue=queue_name, no_ack=no_ack)
-        channel.start_consuming()
+        self.__channel_single.queue_declare(queue=queue_name, durable=True)
+        self.__channel_single.basic_consume(function, queue=queue_name, no_ack=no_ack)
+        self.__channel_single.start_consuming()
 
     def consumer_work_queue(self, queue_name, function, prefetch_count=1, durable=True):
         """
@@ -86,12 +90,10 @@ class AsyConsumer:
         if not prefetch_count or not isinstance(prefetch_count, int) or not isinstance(durable, bool):
             raise TypeError("参数有误, 请重新输入")
 
-        connection = self.__connection
-        channel = connection.channel()
-        channel.queue_declare(queue=queue_name, durable=durable)
-        channel.basic_qos(prefetch_count=prefetch_count)
-        channel.basic_consume(function, queue=queue_name)
-        channel.start_consuming()
+        self.__channel_work_queue.queue_declare(queue=queue_name, durable=durable)
+        self.__channel_work_queue.basic_qos(prefetch_count=prefetch_count)
+        self.__channel_work_queue.basic_consume(function, queue=queue_name)
+        self.__channel_work_queue.start_consuming()
 
     def consumer_subscribe(self, exchange, function):
         """
@@ -103,14 +105,12 @@ class AsyConsumer:
         if not exchange or not isinstance(exchange, str):
             raise TypeError("参数有误, 请重新输入")
 
-        connection = self.__connection
-        channel = connection.channel()
-        channel.exchange_declare(exchange=exchange, type='fanout')
-        result = channel.queue_declare(exclusive=True)
+        self.__channel_subscribe.exchange_declare(exchange=exchange, type='fanout')
+        result = self.__channel_subscribe.queue_declare(exclusive=True)
         queue_name = result.method.queue
-        channel.queue_bind(exchange=exchange, queue=queue_name)
-        channel.basic_consume(function, queue=queue_name, no_ack=True)
-        channel.start_consuming()
+        self.__channel_subscribe.queue_bind(exchange=exchange, queue=queue_name)
+        self.__channel_subscribe.basic_consume(function, queue=queue_name, no_ack=True)
+        self.__channel_subscribe.start_consuming()
 
     def consumer_routing(self, exchange, binding_keys, function):
         """
@@ -125,17 +125,15 @@ class AsyConsumer:
         if not binding_keys or not isinstance(binding_keys, list):
             raise TypeError("参数有误, 请重新输入")
 
-        connection = self.__connection
-        channel = connection.channel()
-        channel.exchange_declare(exchange=exchange, type='direct')
-        result = channel.queue_declare(exclusive=True)
+        self.__channel_routing.exchange_declare(exchange=exchange, type='direct')
+        result = self.__channel_routing.queue_declare(exclusive=True)
         queue_name = result.method.queue
         for binding_key in binding_keys:
             if not binding_key or not isinstance(binding_key, str):
                 raise TypeError("参数有误, 请重新输入")
-            channel.queue_bind(exchange=exchange, queue=queue_name, routing_key=binding_key)
-        channel.basic_consume(function, queue=queue_name)
-        channel.start_consuming()
+            self.__channel_routing.queue_bind(exchange=exchange, queue=queue_name, routing_key=binding_key)
+        self.__channel_routing.basic_consume(function, queue=queue_name)
+        self.__channel_routing.start_consuming()
 
     def consumer_topics(self, exchange, binding_keys, function):
         """
@@ -150,18 +148,16 @@ class AsyConsumer:
         if not binding_keys or not isinstance(binding_keys, list):
             raise TypeError("参数错误, 请重新输入")
 
-        connection = self.__connection
-        channel = connection.channel()
-        channel.exchange_declare(exchange=exchange, type='topic')
-        result = channel.queue_declare(exclusive=True)
+        self.__channel_routing.exchange_declare(exchange=exchange, type='topic')
+        result = self.__channel_routing.queue_declare(exclusive=True)
         queue_name = result.method.queue
         for binding_key in binding_keys:
             if not binding_key or not isinstance(binding_key, str):
                 raise TypeError("参数错误, 请重新输入")
-            channel.queue_bind(exchange=exchange, queue=queue_name, routing_key=binding_key)
+            self.__channel_routing.queue_bind(exchange=exchange, queue=queue_name, routing_key=binding_key)
 
-        channel.basic_consume(function, queue=queue_name, no_ack=True)
-        channel.start_consuming()
+        self.__channel_routing.basic_consume(function, queue=queue_name, no_ack=True)
+        self.__channel_routing.start_consuming()
 
 if __name__ == "__main__":
     pass
