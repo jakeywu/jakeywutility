@@ -166,16 +166,13 @@ class AsyProducer:
 
 
 if __name__ == "__main__":
+    pass
+    """
     import json
     message1 = json.dumps({"companyName": "杭州誉存科技有限公司"})
     connection = AsyProducer(host="192.168.31.114", user_name="sc-admin", password="1qaz2wsx")
     for i in range(201):
         connection.producer_work_queue(queue_name="task_queue", message=message1)
-    connection.close()
-    """
-    for i in range(5):
-        message1 = "testing_data"
-        connection = AsyProducer(host="192.168.31.114", user_name="sc-admin", password="1qaz2wsx")
         # 基本用法
         connection.producer_single(queue_name='single', message=message1)
         # 分布式任务调度  从queue里面读取消息
@@ -186,5 +183,5 @@ if __name__ == "__main__":
         connection.producer_routing(message=message1, routing_key="error", exchange="routing_test")
         # 按照不完全匹配发送接收消息
         connection.producer_topics(message=message1, routing_key="sys.info", exchange="topics_test")
+    connection.close()
     """
-
